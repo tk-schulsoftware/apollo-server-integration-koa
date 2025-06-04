@@ -19,6 +19,25 @@ it('gives helpful error if body-parser middleware is not installed', async () =>
   await server.stop();
 });
 
+it('calls middlewares defined after it', async () => {
+  const server = new ApolloServer({ typeDefs: 'type Query {f: ID}' });
+  const app = new koa();
+  const spy = jest.fn();
+
+  await server.start();
+
+  app.use(bodyParser());
+  app.use(koaMiddleware(server));
+  app.use((_, next) => {
+    spy();
+    return next();
+  });
+
+  await request(app.callback()).post('/').send({ query: '{f}' }).expect(200);
+  expect(spy).toBeCalled();
+  await server.stop();
+});
+
 it('not calling start causes a clear error', async () => {
   const server = new ApolloServer({ typeDefs: 'type Query {f: ID}' });
   expect(() => koaMiddleware(server)).toThrow(

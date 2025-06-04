@@ -69,16 +69,16 @@ export function koaMiddleware<
     TContext
   > = options?.context ?? defaultContext;
 
-  return async (ctx) => {
-    if (!ctx.request.body) {
+  return async (ctx, next) => {
+    if (!ctx.request.body && ctx.request.method === 'POST') {
       // The json koa-bodyparser *always* sets ctx.request.body to {} if it's unset (even
       // if the Content-Type doesn't match), so if it isn't set, you probably
       // forgot to set up koa-bodyparser.
       ctx.status = 500;
       ctx.body =
         '`ctx.request.body` is not set; this probably means you forgot to set up the ' +
-        '`koa-bodyparser` middleware before the Apollo Server middleware.';
-      return;
+        '`koa-bodyparser` or `@koa/bodyparser` middleware before the Apollo Server middleware.';
+      return next();
     }
 
     const incomingHeaders = new HeaderMap();
