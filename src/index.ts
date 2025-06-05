@@ -11,8 +11,8 @@ import {
 import type Koa from 'koa';
 // we need the extended `Request` type from `koa-bodyparser`,
 // this is similar to an effectful import but for types, since
-// the `koa-bodyparser` types "polyfill" the `koa` types
-import type * as _ from 'koa-bodyparser';
+// the `@koa/bodyparser` types "polyfill" the `koa` types
+import type * as _ from '@koa/bodyparser';
 
 export interface KoaContextFunctionArgument<
   StateT = Koa.DefaultState,
@@ -70,7 +70,7 @@ export function koaMiddleware<
   > = options?.context ?? defaultContext;
 
   return async (ctx, next) => {
-    if (!ctx.request.body && ctx.request.method === 'POST') {
+    if (ctx.request.method === 'POST' && !ctx.request.body) {
       // The json koa-bodyparser *always* sets ctx.request.body to {} if it's unset (even
       // if the Content-Type doesn't match), so if it isn't set, you probably
       // forgot to set up koa-bodyparser.
@@ -78,6 +78,7 @@ export function koaMiddleware<
       ctx.body =
         '`ctx.request.body` is not set; this probably means you forgot to set up the ' +
         '`koa-bodyparser` or `@koa/bodyparser` middleware before the Apollo Server middleware.';
+
       return next();
     }
 
@@ -136,5 +137,7 @@ export function koaMiddleware<
     for (const [key, value] of headers) {
       ctx.set(key, value);
     }
+
+    return next();
   };
 }

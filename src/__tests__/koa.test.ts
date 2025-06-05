@@ -3,6 +3,7 @@ import koa from 'koa';
 import request from 'supertest';
 import { it, expect } from '@jest/globals';
 import { koaMiddleware } from '..';
+import { bodyParser } from '@koa/bodyparser';
 
 it('gives helpful error if body-parser middleware is not installed', async () => {
   const server = new ApolloServer({ typeDefs: 'type Query {f: ID}' });
@@ -19,7 +20,7 @@ it('gives helpful error if body-parser middleware is not installed', async () =>
   await server.stop();
 });
 
-it('calls middlewares defined after it', async () => {
+it('calls middlewares defined after koaMiddleware', async () => {
   const server = new ApolloServer({ typeDefs: 'type Query {f: ID}' });
   const app = new koa();
   const spy = jest.fn();
