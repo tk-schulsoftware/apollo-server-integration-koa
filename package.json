@@ -40,7 +40,7 @@
     "@changesets/changelog-github": "0.5.1",
     "@changesets/cli": "2.29.4",
     "@jest/globals": "29.7.0",
-    "@koa/bodyparser": "5.1.2",
+    "@koa/bodyparser": "6.0.0",
     "@koa/cors": "5.0.0",
     "@types/jest": "29.5.14",
     "@types/koa": "2.15.0",
